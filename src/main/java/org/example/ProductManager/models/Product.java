@@ -1,21 +1,32 @@
 package org.example.ProductManager.models;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Transient;
+import java.util.Calendar;
+import java.util.Objects;
 
 @Entity
 public class Product {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
+	@Column(nullable = false, unique = true)
 	private String productName;
 	private int year;
 	private Double price;
 	private String url;
 
 	public Product() {}
+
+	@Transient
+	private int age;
+	public int getAge() {
+		return Calendar.getInstance().get(Calendar.YEAR) - year;
+	}
 
 	public Product(String productName, int year, Double price, String url) {
 		this.productName = productName;
@@ -73,5 +84,18 @@ public class Product {
 				", price=" + price +
 				", url='" + url + '\'' +
 				'}';
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Product product = (Product) o;
+		return year == product.year && age == product.age && Objects.equals(id, product.id) && Objects.equals(productName, product.productName) && Objects.equals(price, product.price) && Objects.equals(url, product.url);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, productName, year, price, url, age);
 	}
 }
